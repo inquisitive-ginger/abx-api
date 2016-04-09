@@ -1,24 +1,33 @@
-var express = require('express'); 
-var path = require('path'); 
-var favicon = require('serve-favicon'); 
-var logger = require('morgan'); 
-var cookieParser = require('cookie-parser'); 
-var bodyParser = require('body-parser');
+// package dependencies
+var bodyParser 		= require('body-parser');
+var cookieParser 	= require('cookie-parser');
+var cors 			= require('cors'); 
+var express 		= require('express'); 
+var favicon 		= require('serve-favicon'); 
+var http 			= require('http');
+var path 			= require('path'); 
+var proxymw 		= require('http-proxy-middleware');
 
-var api = require('./routes/api');
 
 var app = express();
-var cors = require('cors');
+
 app.use(cors({origin: true, credentials: true}));
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
+// http server
+var server 	= http.createServer(app);
+
+// controllers
+var DM32Controller 		= require('./controllers/dm32.controller');
+var ResultsController 	= require('./controllers/results.controller');
+var SocketController 	= require('./controllers/socket.controller');
+
+var socketCtl 		= new SocketController(server);
+global.dm32Manager 	= new DM32Controller(socketCtl);
+global.results 		= new ResultsController(socketCtl);
+
+// register api routes
+var api = require('./routes/api');
 app.use('/api', api);
 
-module.exports = app;
+server.listen(3000);
