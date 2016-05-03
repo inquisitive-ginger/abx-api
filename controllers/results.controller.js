@@ -1,16 +1,17 @@
 'use strict';
 
+var _ 		= require('underscore');
+var ss 		= require('simple-statistics');
+
+
 var ResultsController = function() {
 	var _this 	= this;
-	var _ 		= require('underscore');
-	var ss 		= require('simple-statistics');
-	var util 	= require('./util/utils');
 
+	_this.calculateResults 	= calculateResults;
+	_this.calculateFlow		= calculateFlow;
+	
 	// do fancy math and return package of results data
-	_this.results = function(req, res) {
-		var data = req.body;
-		var table = data.table;
-
+	function calculateResults(table) {
 		var lnData 	= ln(table);
 		var uz 		= _.unzip(lnData);
 		var x 		= uz[0];
@@ -29,7 +30,11 @@ var ResultsController = function() {
 			nr	: Math.round(100*(c*Math.pow(data.ref,lr.m) / data.envArea)) / 100
 		};
 
-		util.sendJsonResponse(res, 200, {results: results});
+		return results;
+	}
+
+	function calculateFlow(eDP, fDP, coeffs) {
+		return Math.round(Math.pow((fDP - Math.abs(eDP)*coeffs['K1']), coeffs['N']) * (coeffs['K'] + coeffs['K3'] * fDP));
 	}
 
 	// performs log-log transform of data

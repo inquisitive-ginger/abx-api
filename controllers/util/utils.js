@@ -21,8 +21,8 @@ function indexOf(arr, param, value) {
 }
 
 function getJsonFromFile(file) {
-    var fs 		= require('fs');
-    var json 	= getConfig(file);
+    var fs 	= require('fs');
+    var json = getConfig(file);
 
     return json;
 

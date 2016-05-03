@@ -23,7 +23,7 @@ var ResultsController 	= require('./controllers/results.controller');
 var SocketController 	= require('./controllers/socket.controller');
 
 var socketCtl 		= new SocketController(server);
-global.dm32Manager 	= new DM32Controller(socketCtl);
+global.dm32Manager 	= new DM32Controller(socketCtl, app);
 global.results 		= new ResultsController(socketCtl);
 
 // register api routes
